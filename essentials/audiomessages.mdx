@@ -21,24 +21,20 @@ To denote a `word` or `phrase` as code, enclose it in backticks (\`).
 To denote a `word` or `phrase` as code, enclose it in backticks (`).
 ```
 
-### Code Block
+### Listen to messages
 
-Use [fenced code blocks](https://www.markdownguide.org/extended-syntax/#fenced-code-blocks) by enclosing code in three backticks and follow the leading ticks with the programming language of your snippet to get syntax highlighting. Optionally, you can also write the name of your code after the programming language.
+The messages can be shown by calling the activate_audio_messages function
 
-```java HelloWorld.java
-class HelloWorld {
-    public static void main(String[] args) {
-        System.out.println("Hello, World!");
-    }
+```javascript audiomessages.js
+function activate_audio_messages() {
+
+    audio_messages_skeleton();
+
+    // Fetch latest audio messages
+    current_app_name = "audio_messages";
+    const from_timestamp = new Date(0).toISOString();
+    get_last_files("audio", from_timestamp);
+
 }
 ```
 
-````md
-```java HelloWorld.java
-class HelloWorld {
-    public static void main(String[] args) {
-        System.out.println("Hello, World!");
-    }
-}
-```
-````
