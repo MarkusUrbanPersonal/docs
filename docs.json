@@ -46,11 +46,11 @@
           {
             "group": "Authentication & Users",
             "pages": [
-              "api-reference/endpoint/register-assistant",
-              "api-reference/endpoint/register-appuser",
-              "api-reference/endpoint/login-appuser",
-              "api-reference/endpoint/connect",
-              "api-reference/endpoint/get-user-id"
+              "api-reference/endpoint/users/register-assistant",
+              "api-reference/endpoint/users/register-appuser",
+              "api-reference/endpoint/users/login-appuser",
+              "api-reference/endpoint/users/connect",
+              "api-reference/endpoint/users/get-user-id"
             ]
           }
         ]
