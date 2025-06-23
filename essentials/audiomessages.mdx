@@ -13,17 +13,15 @@ icon: "microphone"
 
 ## Audio messages
 
-### Inline Code
+### Record an audio message
 
-To denote a `word` or `phrase` as code, enclose it in backticks (\`).
-
-```
-To denote a `word` or `phrase` as code, enclose it in backticks (`).
-```
+_Work in progress_
 
 ### Listen to messages
 
-The messages can be shown by calling the activate_audio_messages function
+#### All messages
+
+The whole message list can be shown by calling the `activate_audio_messages` function
 
 ```javascript audiomessages.js
 function activate_audio_messages() {
@@ -34,6 +32,23 @@ function activate_audio_messages() {
     current_app_name = "audio_messages";
     const from_timestamp = new Date(0).toISOString();
     get_last_files("audio", from_timestamp);
+
+}
+```
+
+#### From a specific user
+
+It is also possible to fetch the messages that have been sent by a specific user, that is identified using the `user_id`. 
+
+```javascript audiomessages.js
+function get_audios_from_user(user_id) {
+
+    audio_messages_skeleton();
+
+    // Get audios from specific user_id from server
+    current_app_name = "audio_messages";
+    const from_timestamp = new Date(0).toISOString();
+    get_last_files("audio", from_timestamp, user_id);
 
 }
 ```
