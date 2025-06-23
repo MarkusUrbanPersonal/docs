@@ -1,216 +1,3115 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.0",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
+    "title": "Cati Main Server API",
+    "version": "1.0.0",
+    "description": "API for managing Cati assistant users, app users, contacts, media, notifications and preferences."
   },
   "servers": [
     {
-      "url": "http://sandbox.mintlify.com"
+      "url": "/"
     }
   ],
-  "security": [
-    {
-      "bearerAuth": []
-    }
-  ],
-  "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "webhooks": {
-    "/plant/webhook": {
-      "post": {
-        "description": "Information about a new plant added to the store",
-        "requestBody": {
-          "description": "Plant added to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Return a 200 status to indicate that the data was received successfully"
-          }
-        }
-      }
-    }
-  },
-  "components": {
     "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
+      "ErrorResponse": {
         "type": "object",
         "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
+          "status": {
+            "type": "string",
+            "example": "error"
           },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
+          "message": {
+            "type": "string",
+            "example": "Database connection failed"
           }
         }
       },
-      "NewPlant": {
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "message": {
+            "type": "string",
+            "example": "Operation completed successfully"
+          }
+        }
+      },
+      "UserToken": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT Access Token for authentication.",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          }
+        }
+      },
+      "AssistantRegistrationRequest": {
+        "type": "object",
+        "required": [
+          "phone",
+          "full_name"
+        ],
+        "properties": {
+          "phone": {
+            "type": "string",
+            "example": "+34612345678"
+          },
+          "full_name": {
+            "type": "string",
+            "example": "Cati Owner"
+          }
+        }
+      },
+      "AssistantRegistrationSuccess": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/Plant"
+            "$ref": "#/components/schemas/SuccessResponse"
           },
           {
-            "required": [
-              "id"
-            ],
             "type": "object",
             "properties": {
-              "id": {
-                "description": "Identification number of the plant",
+              "code": {
+                "type": "string",
+                "description": "Security code for mobile app connection.",
+                "example": "AbC1dE2fG3"
+              },
+              "access_token": {
+                "type": "string",
+                "description": "JWT Access Token for the registered assistant.",
+                "example": "eyJ..."
+              },
+              "user_id": {
                 "type": "integer",
-                "format": "int64"
+                "description": "The user ID of the newly registered assistant.",
+                "example": 101
               }
             }
           }
         ]
       },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
+      "ConnectAssistantRequest": {
         "type": "object",
+        "required": [
+          "token",
+          "code"
+        ],
         "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
+          "token": {
+            "type": "string",
+            "description": "JWT Access Token of the mobile app user attempting to connect.",
+            "example": "eyJ..."
           },
-          "message": {
-            "type": "string"
+          "code": {
+            "type": "string",
+            "description": "Security code obtained from the assistant device.",
+            "example": "AbC1dE2fG3"
           }
         }
+      },
+      "ConnectAssistantResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SuccessResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "assistant": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "example": 101
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "Cati Owner"
+                  },
+                  "image": {
+                    "type": "string",
+                    "nullable": true,
+                    "example": "http://example.com/image.jpg"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "+34612345678"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "SendSMSRequest": {
+        "type": "object",
+        "required": [
+          "phone"
+        ],
+        "properties": {
+          "phone": {
+            "type": "string",
+            "example": "+34612345678"
+          }
+        }
+      },
+      "SendSMSResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SuccessResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "User with this phone number already exists"
+              }
+            }
+          }
+        ]
+      },
+      "GenerateResetTokenRequest": {
+        "type": "object",
+        "required": [
+          "phone",
+          "code"
+        ],
+        "properties": {
+          "phone": {
+            "type": "string",
+            "example": "+34612345678"
+          },
+          "code": {
+            "type": "string",
+            "description": "SMS verification code.",
+            "example": "123456"
+          }
+        }
+      },
+      "GenerateResetTokenResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SuccessResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "token": {
+                "type": "string",
+                "description": "Password reset JWT token.",
+                "example": "eyJ..."
+              }
+            }
+          }
+        ]
+      },
+      "ResetPasswordRequest": {
+        "type": "object",
+        "required": [
+          "token",
+          "password"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Password reset JWT token.",
+            "example": "eyJ..."
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "example": "newStrongPassword123"
+          }
+        }
+      },
+      "AppUserRegistrationRequest": {
+        "type": "object",
+        "required": [
+          "phone",
+          "code",
+          "password",
+          "full_name"
+        ],
+        "properties": {
+          "phone": {
+            "type": "string",
+            "example": "+34612345678"
+          },
+          "code": {
+            "type": "string",
+            "description": "SMS verification code.",
+            "example": "123456"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "example": "mySecurePassword123"
+          },
+          "full_name": {
+            "type": "string",
+            "example": "App User"
+          }
+        }
+      },
+      "AppUserRegistrationResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SuccessResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "access_token": {
+                "type": "string",
+                "description": "JWT Access Token for the registered app user.",
+                "example": "eyJ..."
+              }
+            }
+          }
+        ]
+      },
+      "LoginAppUserRequest": {
+        "type": "object",
+        "required": [
+          "phone",
+          "password"
+        ],
+        "properties": {
+          "phone": {
+            "type": "string",
+            "example": "+34612345678"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "example": "mySecurePassword123"
+          }
+        }
+      },
+      "LoginAppUserResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SuccessResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "access_token": {
+                "type": "string",
+                "description": "JWT Access Token for the logged-in app user.",
+                "example": "eyJ..."
+              }
+            }
+          }
+        ]
+      },
+      "UpdateUserBasicDataRequest": {
+        "type": "object",
+        "required": [
+          "token",
+          "name"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT Access Token of the user.",
+            "example": "eyJ..."
+          },
+          "name": {
+            "type": "string",
+            "example": "Updated Full Name"
+          },
+          "image": {
+            "type": "string",
+            "nullable": true,
+            "example": "http://example.com/new_image.jpg"
+          }
+        }
+      },
+      "UpdateUserPhoneNumberRequest": {
+        "type": "object",
+        "required": [
+          "token",
+          "phone",
+          "code"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT Access Token of the user.",
+            "example": "eyJ..."
+          },
+          "phone": {
+            "type": "string",
+            "example": "+34698765432"
+          },
+          "code": {
+            "type": "string",
+            "description": "SMS verification code for the new phone number.",
+            "example": "654321"
+          }
+        }
+      },
+      "ConnectedAssistant": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 101
+          },
+          "name": {
+            "type": "string",
+            "example": "Cati Owner"
+          },
+          "image": {
+            "type": "string",
+            "nullable": true,
+            "example": "http://example.com/owner_image.jpg"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+34612345678"
+          }
+        }
+      },
+      "GetConnectedAssistantsResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SuccessResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "assistants": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ConnectedAssistant"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "UpdatePreferenceRequest": {
+        "type": "object",
+        "required": [
+          "token",
+          "assistant_id",
+          "preference_name",
+          "preference_value"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT Access Token of the mobile app user.",
+            "example": "eyJ..."
+          },
+          "assistant_id": {
+            "type": "integer",
+            "description": "ID of the assistant whose preference is being updated.",
+            "example": 101
+          },
+          "preference_name": {
+            "type": "string",
+            "description": "Name of the preference to update (e.g., 'background_image', 'installed_apps').",
+            "example": "background_image"
+          },
+          "preference_value": {
+            "type": "string",
+            "description": "Value of the preference.",
+            "example": "http://example.com/new_background.png"
+          }
+        }
+      },
+      "GetPreferenceRequest": {
+        "type": "object",
+        "required": [
+          "assistant_id"
+        ],
+        "properties": {
+          "assistant_id": {
+            "type": "integer",
+            "description": "ID of the assistant whose preferences are being requested.",
+            "example": 101
+          }
+        }
+      },
+      "AssistantPreferencesResponse": {
+        "type": "object",
+        "properties": {
+          "background_image": {
+            "type": "string",
+            "nullable": true,
+            "example": "http://example.com/background.png"
+          },
+          "apps": {
+            "type": "string",
+            "nullable": true,
+            "description": "JSON string of installed apps.",
+            "example": "[\"app1\", \"app2\"]"
+          }
+        }
+      },
+      "GetCodeRequest": {
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT Access Token of the assistant user.",
+            "example": "eyJ..."
+          }
+        }
+      },
+      "GetCodeResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SuccessResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "description": "Security code for connecting to this assistant.",
+                "example": "XyZ9wV8uT7"
+              }
+            }
+          }
+        ]
+      },
+      "SendMediaRequest": {
+        "type": "object",
+        "required": [
+          "token",
+          "assistant_id",
+          "file_path"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT Access Token of the sender (mobile app user).",
+            "example": "eyJ..."
+          },
+          "assistant_id": {
+            "type": "integer",
+            "description": "ID of the assistant user to whom the media is sent.",
+            "example": 101
+          },
+          "file_path": {
+            "type": "string",
+            "description": "Path or URL to the image/audio file.",
+            "example": "http://example.com/media/image1.jpg"
+          }
+        }
+      },
+      "ReceiveMediaRequest": {
+        "type": "object",
+        "required": [
+          "token",
+          "from_timestamp"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT Access Token of the receiver (assistant user).",
+            "example": "eyJ..."
+          },
+          "from_timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp (UTC) from which to retrieve new media (YYYY-MM-DD HH:MM:SS).",
+            "example": "2024-01-01 00:00:00"
+          },
+          "sender_user_id": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Optional: Filter media by a specific sender user ID.",
+            "example": 201
+          }
+        }
+      },
+      "MediaItem": {
+        "type": "object",
+        "properties": {
+          "media_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "sender_id": {
+            "type": "integer",
+            "example": 201
+          },
+          "receiver_id": {
+            "type": "integer",
+            "nullable": true,
+            "example": 101
+          },
+          "media_path": {
+            "type": "string",
+            "example": "http://example.com/media/image1.jpg"
+          },
+          "sent_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Local time (Europe/Madrid).",
+            "example": "2024-06-21 15:30:00"
+          },
+          "sender_name": {
+            "type": "string",
+            "example": "Mobile User One"
+          },
+          "sender_image": {
+            "type": "string",
+            "nullable": true,
+            "example": "http://example.com/mobile_user_image.jpg"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "audio",
+              "image"
+            ],
+            "example": "image"
+          }
+        }
+      },
+      "ReceiveMediaMobileRequest": {
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT Access Token of the mobile app user.",
+            "example": "eyJ..."
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of media items to retrieve per page.",
+            "example": 10
+          },
+          "page": {
+            "type": "integer",
+            "description": "Page number for pagination (starts at 1).",
+            "example": 1
+          }
+        }
+      },
+      "ContactRequest": {
+        "type": "object",
+        "required": [
+          "token",
+          "assistant_id",
+          "name",
+          "phone",
+          "image",
+          "global"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT Access Token of the mobile app user.",
+            "example": "eyJ..."
+          },
+          "assistant_id": {
+            "type": "integer",
+            "description": "ID of the assistant user this contact belongs to.",
+            "example": 101
+          },
+          "name": {
+            "type": "string",
+            "example": "Emergency Contact"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+34600112233"
+          },
+          "image": {
+            "type": "string",
+            "nullable": true,
+            "example": "http://example.com/contact_image.jpg"
+          },
+          "global": {
+            "type": "boolean",
+            "description": "If true, adds the contact to all assistants connected to the mobile user.",
+            "example": false
+          }
+        }
+      },
+      "ContactResponse": {
+        "type": "object",
+        "properties": {
+          "contact_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "contact_name": {
+            "type": "string",
+            "example": "Emergency Contact"
+          },
+          "phone_number": {
+            "type": "string",
+            "example": "+34600112233"
+          },
+          "image": {
+            "type": "string",
+            "nullable": true,
+            "example": "http://example.com/contact_image.jpg"
+          }
+        }
+      },
+      "GetContactsMobileRequest": {
+        "type": "object",
+        "required": [
+          "token",
+          "assistant_id"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT Access Token of the mobile app user.",
+            "example": "eyJ..."
+          },
+          "assistant_id": {
+            "type": "integer",
+            "description": "ID of the assistant whose contacts are being requested.",
+            "example": 101
+          }
+        }
+      },
+      "EditContactRequest": {
+        "type": "object",
+        "required": [
+          "token",
+          "assistant_id",
+          "contact_id",
+          "name",
+          "phone",
+          "image"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT Access Token of the mobile app user.",
+            "example": "eyJ..."
+          },
+          "assistant_id": {
+            "type": "integer",
+            "description": "ID of the assistant the contact belongs to.",
+            "example": 101
+          },
+          "contact_id": {
+            "type": "integer",
+            "description": "ID of the contact to update.",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Updated Contact Name"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+34600112233"
+          },
+          "image": {
+            "type": "string",
+            "nullable": true,
+            "example": "http://example.com/updated_contact_image.jpg"
+          }
+        }
+      },
+      "DeleteContactRequest": {
+        "type": "object",
+        "required": [
+          "token",
+          "assistant_id",
+          "contact_id"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT Access Token of the mobile app user.",
+            "example": "eyJ..."
+          },
+          "assistant_id": {
+            "type": "integer",
+            "description": "ID of the assistant the contact belongs to.",
+            "example": 101
+          },
+          "contact_id": {
+            "type": "integer",
+            "description": "ID of the contact to delete.",
+            "example": 1
+          }
+        }
+      },
+      "NotificationRequest": {
+        "type": "object",
+        "required": [
+          "token",
+          "assistant_id",
+          "notification_type",
+          "notification_text"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT Access Token of the mobile app user.",
+            "example": "eyJ..."
+          },
+          "assistant_id": {
+            "type": "integer",
+            "description": "ID of the assistant user to whom the notification is sent.",
+            "example": 101
+          },
+          "notification_type": {
+            "type": "string",
+            "description": "Type of notification (e.g., 'videocall', 'emergency').",
+            "example": "videocall"
+          },
+          "notification_text": {
+            "type": "string",
+            "example": "Incoming video call from John Doe"
+          }
+        }
+      },
+      "NotificationOwnRequest": {
+        "type": "object",
+        "required": [
+          "token",
+          "user_id",
+          "notification_type",
+          "notification_text"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT Access Token of the assistant user sending the notification.",
+            "example": "eyJ..."
+          },
+          "user_id": {
+            "type": "integer",
+            "description": "ID of the user (mobile app user) to whom the notification is sent.",
+            "example": 201
+          },
+          "notification_type": {
+            "type": "string",
+            "description": "Type of notification (e.g., 'videocall', 'emergency').",
+            "example": "emergency"
+          },
+          "notification_text": {
+            "type": "string",
+            "example": "I need help urgently!"
+          }
+        }
+      },
+      "NotificationResponse": {
+        "type": "object",
+        "properties": {
+          "notification_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "user_id": {
+            "type": "integer",
+            "example": 101
+          },
+          "notification_type": {
+            "type": "string",
+            "example": "videocall"
+          },
+          "notification_text": {
+            "type": "string",
+            "example": "Incoming video call from John Doe"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-06-21T15:30:00Z"
+          }
+        }
+      },
+      "GetNotificationsRequest": {
+        "type": "object",
+        "required": [
+          "token",
+          "from_timestamp"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT Access Token of the assistant user.",
+            "example": "eyJ..."
+          },
+          "from_timestamp": {
+            "type": "string",
+            "description": "Timestamp (YYYY-MM-DD HH:MM:SS) from which to retrieve notifications.",
+            "example": "2024-01-01 00:00:00"
+          }
+        }
+      },
+      "LatestActiveUser": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "description": "User ID"
+          },
+          "last_active": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last active timestamp"
+          }
+        },
+        "required": [
+          "user_id",
+          "last_active"
+        ]
+      },
+      "RoomJoinRequest": {
+        "type": "object",
+        "required": [
+          "user_id"
+        ],
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "description": "ID of the user joining the room.",
+            "example": 201
+          }
+        }
+      },
+      "RoomJoinResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SuccessResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "room_code": {
+                "type": "string",
+                "description": "The code of the room the user joined or created.",
+                "example": "Room123ABC"
+              },
+              "invite_candidates": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "description": "List of user IDs that are available for invitation if a new room was created."
+              }
+            }
+          }
+        ]
+      },
+      "RoomHeartbeatRequest": {
+        "type": "object",
+        "required": [
+          "user_id",
+          "room_code"
+        ],
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "description": "ID of the user sending the heartbeat.",
+            "example": 201
+          },
+          "room_code": {
+            "type": "string",
+            "description": "The code of the room the user is in.",
+            "example": "Room123ABC"
+          }
+        }
+      },
+      "SendVideocallPushRequest": {
+        "type": "object",
+        "required": [
+          "user_ids"
+        ],
+        "properties": {
+          "user_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "List of user IDs to send the video call push notification to.",
+            "example": [
+              201,
+              202
+            ]
+          }
+        }
+      },
+      "SendVideocallPushResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "success"
+          },
+          "code": {
+            "type": "string",
+            "description": "Generated video calling code.",
+            "example": "ABC123XYZ"
+          },
+          "id": {
+            "type": "string",
+            "description": "OneSignal notification ID.",
+            "example": "a45f9c5d-c6a6-4c7b-b8f4-2d9d1e1f2a3b"
+          },
+          "recipients": {
+            "type": "integer",
+            "description": "Number of recipients the notification was sent to.",
+            "example": 2
+          }
+        }
+      },
+      "GetUserIdRequest": {
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "JWT Access Token of the user.",
+            "example": "eyJ..."
+          }
+        }
+      },
+      "GetUserIdResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SuccessResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "user_id": {
+                "type": "integer",
+                "description": "The ID of the authenticated user.",
+                "example": 101
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "paths": {
+    "/register-assistant": {
+      "post": {
+        "summary": "Register a new Assistant (OWNER) user",
+        "description": "Registers a new 'OWNER' type user (e.g., Cati assistant) and generates a security code for mobile app connection. Returns an access token for the assistant.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantRegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Assistant registered successfully with security code and access token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantRegistrationSuccess"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or missing fields.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Authentication & Users"
+        ]
       }
     },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
+    "/connect": {
+      "post": {
+        "summary": "Connect Mobile App User to Assistant",
+        "description": "Validates a security code provided by an assistant device and establishes a connection between a mobile app user and an assistant. The mobile app user's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConnectAssistantRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Connection successful. Returns assistant details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectAssistantResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or expired user token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Authentication & Users"
+        ]
+      }
+    },
+    "/send-sms": {
+      "post": {
+        "summary": "Send SMS verification for new user registration",
+        "description": "Sends an SMS verification code to a phone number. Used during app user registration to check if the number is already registered.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendSMSRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "SMS sent successfully or user already exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendSMSResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error sending SMS or database connection failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Authentication & Users"
+        ]
+      }
+    },
+    "/send-reset-sms": {
+      "post": {
+        "summary": "Send SMS verification for password reset",
+        "description": "Sends an SMS verification code to a phone number for password reset purposes. Checks if the user exists.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendSMSRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "SMS sent successfully or user not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendSMSResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error sending SMS or database connection failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Authentication & Users"
+        ]
+      }
+    },
+    "/generate-password-reset-token": {
+      "post": {
+        "summary": "Generate password reset token",
+        "description": "Validates an SMS code and generates a JWT token for password reset.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateResetTokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reset token generated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateResetTokenResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid SMS code.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Authentication & Users"
+        ]
+      }
+    },
+    "/reset-password": {
+      "post": {
+        "summary": "Apply new password using reset token",
+        "description": "Verifies a password reset token and updates the user's password.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or expired token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Authentication & Users"
+        ]
+      }
+    },
+    "/register-appuser": {
+      "post": {
+        "summary": "Register a new Mobile App User",
+        "description": "Registers a new 'APP' type user with a phone number, password, and full name after validating an SMS code. Returns an access token for the registered app user.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppUserRegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "App user registered successfully with access token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppUserRegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid SMS code or missing fields.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Authentication & Users"
+        ]
+      }
+    },
+    "/login-appuser": {
+      "post": {
+        "summary": "Login a Mobile App User",
+        "description": "Authenticates a mobile app user using phone number and password, then returns an access token.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginAppUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful, returns access token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginAppUserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials (phone or password).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Authentication & Users"
+        ]
+      }
+    },
+    "/update-user-basic-data": {
+      "post": {
+        "summary": "Update mobile app user's basic information",
+        "description": "Updates the full name and/or image of the authenticated mobile app user. The user's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserBasicDataRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User basic info updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or expired token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Authentication & Users"
+        ]
+      }
+    },
+    "/update-user-phone-number": {
+      "post": {
+        "summary": "Update mobile app user's phone number",
+        "description": "Updates the phone number of the authenticated mobile app user after validating an SMS code to the new phone number. The user's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserPhoneNumberRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Phone number updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid SMS code.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or expired token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Authentication & Users"
+        ]
+      }
+    },
+    "/get-connected-assistants": {
+      "post": {
+        "summary": "Get assistants connected to a mobile app user",
+        "description": "Retrieves a list of all assistants connected to the authenticated mobile app user. The user's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserToken"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of connected assistants.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetConnectedAssistantsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or expired token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Assistant Management"
+        ]
+      }
+    },
+    "/update-preference": {
+      "post": {
+        "summary": "Update assistant preferences (from mobile app)",
+        "description": "Allows a connected mobile app user to update preferences for a specific assistant. The user's token and assistant ID are passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePreferenceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Preference updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found, invalid, or expired.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User not connected to the specified assistant.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Assistant Management"
+        ]
+      }
+    },
+    "/update-own-preference": {
+      "post": {
+        "summary": "Update assistant's own preferences (from assistant device)",
+        "description": "Allows an authenticated assistant device to update its own preferences. The assistant's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePreferenceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Preference updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found, invalid, or expired.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Assistant Management"
+        ]
+      }
+    },
+    "/get-preference": {
+      "post": {
+        "summary": "Get assistant preferences (from mobile app)",
+        "description": "Retrieves preferences for a specific assistant, accessible by a connected mobile app user. Requires a JWT token in the Authorization header.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetPreferenceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Assistant preferences retrieved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantPreferencesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized: Invalid token or user not connected.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User not connected to the specified assistant.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Assistant Management"
+        ]
+      }
+    },
+    "/get-own-preference": {
+      "post": {
+        "summary": "Get assistant's own preferences (from assistant device)",
+        "description": "Retrieves preferences for the authenticated assistant device. The assistant's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserToken"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Assistant preferences retrieved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantPreferencesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found, invalid, or expired.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Assistant Management"
+        ]
+      }
+    },
+    "/get-code": {
+      "post": {
+        "summary": "Generate and get assistant connection code",
+        "description": "Generates a new, time-limited security code for an assistant, allowing mobile app users to connect to it. The assistant's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetCodeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Security code generated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetCodeResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found, invalid, or expired.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Assistant Management"
+        ]
+      }
+    },
+    "/send-image": {
+      "post": {
+        "summary": "Send an image to an assistant",
+        "description": "Allows a mobile app user to send an image to a specific assistant. The sender's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMediaRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Image sent successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found, invalid, or expired.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Media"
+        ]
+      }
+    },
+    "/send-audio": {
+      "post": {
+        "summary": "Send an audio message to an assistant",
+        "description": "Allows a mobile app user to send an audio message to a specific assistant. A push notification is sent to the assistant. The sender's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMediaRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Audio message sent successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found, invalid, or expired.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Media"
+        ]
+      }
+    },
+    "/receive-image": {
+      "post": {
+        "summary": "Receive images (for assistant device)",
+        "description": "Retrieves images sent to an assistant since a given timestamp. Optionally filters by sender. The receiver's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReceiveMediaRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of received images.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MediaItem"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found, invalid, or expired.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Media"
+        ]
+      }
+    },
+    "/receive-audio": {
+      "post": {
+        "summary": "Receive audio messages (for assistant device)",
+        "description": "Retrieves audio messages sent to an assistant since a given timestamp. Optionally filters by sender. The receiver's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReceiveMediaRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of received audio messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MediaItem"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found, invalid, or expired.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Media"
+        ]
+      }
+    },
+    "/receive-media-mobile": {
+      "post": {
+        "summary": "Receive images and audio messages (for mobile app)",
+        "description": "Retrieves a paginated list of images and audio messages sent to or from the authenticated mobile app user, sorted by recency. The user's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReceiveMediaMobileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of received media (images and audio).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MediaItem"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or expired token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Media"
+        ]
+      }
+    },
+    "/create-contact": {
+      "post": {
+        "summary": "Create a new contact (DEPRECATED: assistant context)",
+        "description": "Creates a new contact and links it to the current assistant user. *Note: The code comments indicate this route might be deprecated or needs an update regarding the new contact system.* The assistant's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "token",
+                  "phone",
+                  "full_name"
+                ],
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "JWT Access Token of the assistant user.",
+                    "example": "eyJ..."
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "+34678123456"
+                  },
+                  "full_name": {
+                    "type": "string",
+                    "example": "New Contact"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contact created and linked successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or expired token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Contacts"
+        ]
+      }
+    },
+    "/get-contacts": {
+      "post": {
+        "summary": "Get contacts for an assistant device",
+        "description": "Retrieves all contacts associated with the authenticated assistant device, including connected mobile app users. The assistant's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserToken"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of contacts.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContactResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found, invalid, or expired.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Contacts"
+        ]
+      }
+    },
+    "/get-contacts-mobile": {
+      "post": {
+        "summary": "Get contacts for a specific assistant (from mobile app)",
+        "description": "Retrieves contacts associated with a specific assistant, accessible by a connected mobile app user. The mobile app user's token and the assistant's ID are passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetContactsMobileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of contacts for the specified assistant.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContactResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found, invalid, or expired.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User not connected to the specified assistant.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Contacts"
+        ]
+      }
+    },
+    "/get-owners": {
+      "post": {
+        "summary": "Get all registered OWNER users (assistants)",
+        "description": "Retrieves a list of all users with 'OWNER' user_type, excluding the requesting user. The assistant's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserToken"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of owner users (assistants).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContactResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found, invalid, or expired.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/get-connected-users": {
+      "post": {
+        "summary": "Get mobile app users connected to an assistant",
+        "description": "Retrieves a list of phone numbers and basic info of mobile app users connected to the authenticated assistant device. The assistant's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserToken"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of connected mobile app users.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "contact_user_id": {
+                        "type": "integer",
+                        "example": 201
+                      },
+                      "contact_name": {
+                        "type": "string",
+                        "example": "Mobile App User"
+                      },
+                      "phone_number": {
+                        "type": "string",
+                        "example": "+34699887766"
+                      },
+                      "image": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "http://example.com/app_user_image.jpg"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or expired token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Assistant Management"
+        ]
+      }
+    },
+    "/add-notification": {
+      "post": {
+        "summary": "Add a notification for an assistant (from mobile app)",
+        "description": "Adds a new notification for a specific assistant, initiated by a connected mobile app user. If the type is 'videocall', it also attempts to send a mobile push notification. The mobile app user's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotificationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Notification added successfully. Includes 'calling_code' for videocall notifications.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/SuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "calling_code": {
+                          "type": "string",
+                          "nullable": true,
+                          "example": "XYZ789"
+                        },
+                        "user_phone": {
+                          "type": "string",
+                          "nullable": true,
+                          "example": "+34612345678"
+                        },
+                        "sent": {
+                          "type": "string",
+                          "nullable": true,
+                          "description": "Response from external notification service.",
+                          "example": "{\"id\": \"abc\", \"recipients\": 1}"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found, invalid, or expired.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User not connected to the specified assistant.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/add-notification-own": {
+      "post": {
+        "summary": "Add a notification from an assistant to a mobile app user",
+        "description": "Adds a new notification for a mobile app user, initiated by an authenticated assistant. The assistant's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotificationOwnRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Notification added successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token not found, invalid, or expired.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/notifications": {
+      "post": {
+        "summary": "Get notifications for an assistant device",
+        "description": "Retrieves notifications for the authenticated assistant device received after a specified timestamp. The assistant's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetNotificationsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of notifications.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid token or unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/create-contact-mobile": {
+      "post": {
+        "summary": "Create a new contact (from mobile app)",
+        "description": "Allows a mobile app user to create a new contact for a specific assistant, or globally for all connected assistants. The mobile app user's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContactRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contact(s) added successfully. Or error if assistant not connected or contact already exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or expired token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Contacts"
+        ]
+      }
+    },
+    "/edit-contact-mobile": {
+      "post": {
+        "summary": "Edit an existing contact (from mobile app)",
+        "description": "Allows a mobile app user to edit an existing contact for a specific assistant. Requires the mobile user to be connected to the assistant and the contact to belong to that assistant. The mobile app user's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditContactRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contact updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or expired token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User not connected to the assistant or contact does not belong to the assistant.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Contacts"
+        ]
+      }
+    },
+    "/delete-contact-mobile": {
+      "post": {
+        "summary": "Delete an existing contact (from mobile app)",
+        "description": "Allows a mobile app user to delete an existing contact for a specific assistant. Requires the mobile user to be connected to the assistant and the contact to belong to that assistant. The mobile app user's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteContactRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contact deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or expired token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User not connected to the assistant or contact does not belong to the assistant.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Contacts"
+        ]
+      }
+    },
+    "/latest_active_users": {
+      "get": {
+        "summary": "Get the latest active users",
+        "description": "Retrieves a list of the most recently active users based on assistant interactions.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of active users to return (default: 5).",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 5
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of latest active users with their last active timestamp.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LatestActiveUser"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/room_join": {
+      "post": {
+        "summary": "Join or create a video call room",
+        "description": "Allows a user to join an existing video call room with less than 4 participants, or creates a new room if none are available. Also returns a list of potential invite candidates if a new room is created.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoomJoinRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Room joined/created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoomJoinResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Video Calls"
+        ]
+      }
+    },
+    "/room_heartbeat": {
+      "post": {
+        "summary": "Update room participant heartbeat",
+        "description": "Updates the last active timestamp for a user in a specific video call room, indicating their presence.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoomHeartbeatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Heartbeat updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "updated"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Database or server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Video Calls"
+        ]
+      }
+    },
+    "/send-videocall-push": {
+      "post": {
+        "summary": "Send video call push notification",
+        "description": "Sends a push notification to specified user IDs to alert them of an incoming video call. Generates a video calling code.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendVideocallPushRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Push notification sent successfully, including the generated video call code.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendVideocallPushResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Video Calls"
+        ]
+      }
+    },
+    "/get-user-id": {
+      "post": {
+        "summary": "Get user ID from token",
+        "description": "Retrieves the user ID from the provided JWT access token. The user's token is passed in the body.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetUserIdRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User ID retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUserIdResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Authentication & Users"
+        ]
+      }
+    },
+    "/create-tables": {
+      "get": {
+        "summary": "Create database tables (Development Only)",
+        "description": "Creates all necessary database tables if they do not already exist. **This endpoint should be disabled in production environments.**",
+        "responses": {
+          "200": {
+            "description": "Tables created successfully.",
+            "content": {
+              "text/plain": {
+                "example": "tables created successfully"
+              }
+            }
+          },
+          "500": {
+            "description": "Error during table creation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Admin & Health"
+        ]
+      }
+    },
+    "/status": {
+      "get": {
+        "summary": "API health check",
+        "description": "Checks the basic operational status of the API.",
+        "responses": {
+          "200": {
+            "description": "API is running successfully.",
+            "content": {
+              "text/plain": {
+                "example": "Running successfully"
+              }
+            }
+          }
+        },
+        "tags": [
+          "Admin & Health"
+        ]
+      }
+    },
+    "/worker": {
+      "get": {
+        "summary": "Worker status check and table creation",
+        "description": "Checks the status of the worker process and attempts to create database tables. Likely intended for background process health checks.",
+        "responses": {
+          "200": {
+            "description": "Worker is running properly and tables checked/created.",
+            "content": {
+              "text/plain": {
+                "example": "Working properly"
+              }
+            }
+          },
+          "500": {
+            "description": "Error during worker process or table creation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Admin & Health"
+        ]
       }
     }
   }
