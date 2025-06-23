@@ -59,6 +59,17 @@
               "api-reference/endpoint/users/generate-password-reset-token",
               "api-reference/endpoint/users/reset-password"
             ]
+          },
+          {
+            "group": "Media",
+            "pages": [
+              "api-reference/endpoint/media/send-image",
+              "api-reference/endpoint/media/send-audio",
+              "api-reference/endpoint/media/receive-image",
+              "api-reference/endpoint/media/receive-audio",
+              "api-reference/endpoint/media/receive-media-mobile"
+              
+            ]
           }
         ]
       }
