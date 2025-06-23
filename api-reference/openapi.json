@@ -1017,7 +1017,7 @@
     "/register-assistant": {
       "post": {
         "summary": "Register a new Assistant (OWNER) user",
-        "description": "Registers a new 'OWNER' type user (e.g., Cati assistant) and generates a security code for mobile app connection. Returns an access token for the assistant.",
+        "description": "Registers a new assistant user, of type `OWNER`, and generates a security code for the companion mobile app connection. Returns an access token for the assistant.",
         "requestBody": {
           "required": true,
           "content": {
