@@ -50,7 +50,13 @@
               "api-reference/endpoint/users/register-appuser",
               "api-reference/endpoint/users/login-appuser",
               "api-reference/endpoint/users/connect",
-              "api-reference/endpoint/users/get-user-id"
+              "api-reference/endpoint/users/get-user-id",
+              "api-reference/endpoint/users/send-sms",
+              "api-reference/endpoint/users/generate-password-reset-token",
+              "api-reference/endpoint/users/send-reset-sms",
+              "api-reference/endpoint/users/reset-password",
+              "api-reference/endpoint/users/update-user-basic-data",
+              "api-reference/endpoint/users/update-user-phone-number"
             ]
           }
         ]

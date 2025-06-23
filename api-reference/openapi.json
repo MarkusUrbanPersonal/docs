@@ -1313,7 +1313,7 @@
     "/register-appuser": {
       "post": {
         "summary": "Register a new Mobile App User",
-        "description": "Registers a new 'APP' type user with a phone number, password, and full name after validating an SMS code. Returns an access token for the registered app user.",
+        "description": "Registers a new `APP` type user with a phone number, password, and full name after validating an SMS code. Returns an access token for the registered app user.",
         "requestBody": {
           "required": true,
           "content": {
