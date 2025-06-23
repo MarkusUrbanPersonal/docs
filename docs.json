@@ -70,6 +70,16 @@
               "api-reference/endpoint/media/receive-media-mobile"
               
             ]
+          },
+          {
+            "group": "Contacts",
+            "pages": [
+              "api-reference/endpoint/contacts/get-contacts",
+              "api-reference/endpoint/contacts/get-contacts-mobile",
+              "api-reference/endpoint/contacts/create-contact",
+              "api-reference/endpoint/contacts/edit-contact",
+              "api-reference/endpoint/contacts/delete-contact"
+            ]
           }
         ]
       }
