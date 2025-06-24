@@ -1,6 +1,6 @@
 ---
-title: "Connections"
-description: "Understand how users are connected to each other"
+title: "User types"
+description: "Understand the types of uers and how they connect"
 ---
 
 ## User types
@@ -21,15 +21,18 @@ Refers to a mobile app user, usually a family member of the `owner`
 
 ## User connections
 Usually, an `app` user connects to an `owner` device to manage the device. When the app user connects, it will show as a contact to the `owner` device.  
-App users are also able to view and edit multiple preferences, start and receive videocalls, and send images and audiomessages to the owner. 
 
 An `app` user can be connect to multiple `owners` (for example, a son may connect to the assistant of both of his parents). 
 
-An `owner` device can be connected with multiple `app` users (for example, it could connect - and therefore be managed - by all the sons of the family).
+An `owner` device can be connected with multiple `app` users (for example, it could connect to multiple family members).
 
 <img className="block dark:hidden" src="/images/connections_light.png" />
 
 <img className="hidden dark:block" src="/images/connections_dark.png" />
+
+
+App users are able to view and edit multiple preferences, start and receive videocalls, and send images and audiomessages to the `owner` device. 
+
 
 
 
@@ -45,17 +48,6 @@ An `owner` device can be connected with multiple `app` users (for example, it co
 
 Update your docs to your brand and add valuable content for the best user conversion.
 
-<CardGroup cols={2}>
-  <Card title="Customize Style" icon="palette" href="https://mintlify.com/docs/settings/global">
-    Customize your docs to your company's colors and brands
-  </Card>
-  <Card title="Reference APIs" icon="code" href="https://mintlify.com/docs/api-playground/openapi">
-    Automatically generate endpoints from an OpenAPI spec
-  </Card>
-  <Card title="Add Components" icon="screwdriver-wrench" href="https://mintlify.com/docs/content/components/accordions">
-    Build interactive features and designs to guide your users
-  </Card>
-  <Card title="Get Inspiration" icon="stars" href="https://mintlify.com/customers">
-    Check out our showcase of our favorite documentation
-  </Card>
-</CardGroup>
+<Card title="User authentication" icon="key" href="./api-reference/authentication">
+    Learn how users authenticate and establish connections
+</Card>
