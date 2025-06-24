@@ -2310,8 +2310,8 @@
     },
     "/get-owners": {
       "post": {
-        "summary": "Get all registered OWNER users (assistants)",
-        "description": "Retrieves a list of all users with 'OWNER' user_type, excluding the requesting user. The assistant's token is passed in the body.",
+        "summary": "Get all registered `OWNER` users (assistants)",
+        "description": "Retrieves a list of all users with `OWNER` user_type, excluding the requesting user. The assistant's `token` is passed in the body.",
         "requestBody": {
           "required": true,
           "content": {

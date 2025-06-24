@@ -82,6 +82,13 @@
             ]
           },
           {
+            "group": "Users",
+            "pages": [
+              "api-reference/endpoint/users/get-owners",
+              "api-reference/endpoint/users/latest_active_users"
+            ]
+          },
+          {
             "group": "Videocalls",
             "pages": [
               "api-reference/endpoint/videocalls/room_join",
