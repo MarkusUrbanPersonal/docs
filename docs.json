@@ -38,6 +38,13 @@
         "tab": "API Reference",
         "groups": [
           {
+            "group": "Core API",
+            "openapi": {
+              "source": "/openapi.json",
+              "directory": "api-reference/core"
+            }
+          },
+          {
             "group": "API Documentation",
             "pages": [
               "api-reference/introduction",
@@ -46,9 +53,6 @@
           },
           {
             "group": "Authentication & Users",
-            "openapi": [
-              { "source": "openapi.json", "directory": "api-reference/endpoint/users"}
-            ],
             "pages": [
               "api-reference/endpoint/users/register-assistant",
               "api-reference/endpoint/users/register-appuser",
