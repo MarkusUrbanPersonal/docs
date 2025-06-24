@@ -46,6 +46,9 @@
           },
           {
             "group": "Authentication & Users",
+            "openapi": [
+              { "source": "openapi.json", "directory": "api-reference/endpoint/users"}
+            ],
             "pages": [
               "api-reference/endpoint/users/register-assistant",
               "api-reference/endpoint/users/register-appuser",
