@@ -89,11 +89,11 @@
             ]
           },
           {
-            "group": "Videocalls",
+            "group": "Rooms",
             "pages": [
-              "api-reference/endpoint/videocalls/room_join",
-              "api-reference/endpoint/videocalls/room_heartbeat",
-              "api-reference/endpoint/videocalls/send-videocall-push"
+              "api-reference/endpoint/rooms/room_join",
+              "api-reference/endpoint/rooms/room_heartbeat",
+              "api-reference/endpoint/rooms/send-videocall-push"
             ]
           }
         ]
