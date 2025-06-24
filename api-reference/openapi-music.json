@@ -14,6 +14,7 @@
     "/songsearch": {
       "get": {
         "summary": "Search for a song",
+        "description": "Search for a song",
         "parameters": [
           {
             "name": "query",
@@ -52,6 +53,7 @@
     "/songurl": {
       "get": {
         "summary": "Get the playback URL for a song",
+        "description": "Get the playback URL for a song",
         "parameters": [
           {
             "name": "query",
@@ -80,6 +82,7 @@
     "/artistsongs": {
       "get": {
         "summary": "Get an artist's top songs",
+        "description": "Get an artist's top songs",
         "parameters": [
           {
             "name": "query",
