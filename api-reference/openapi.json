@@ -19,6 +19,68 @@
       }
     },
     "schemas": {
+            "Song": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "artist": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "SongUrl": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "ArtistTopTracks": {
+        "type": "object",
+        "properties": {
+          "artist": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "top_tracks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Track"
+            }
+          }
+        }
+      },
+      "Track": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "cover": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
       "ErrorResponse": {
         "type": "object",
         "properties": {
@@ -3110,6 +3172,109 @@
         "tags": [
           "Admin & Health"
         ]
+      }
+    },
+    "/songsearch": {
+      "get": {
+        "summary": "Search for a song",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The search query for the song or artist."
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["track", "artist"]
+            },
+            "description": "The type of search to perform."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with song information.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Song"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/songurl": {
+      "get": {
+        "summary": "Get the playback URL for a song",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The title of the song to get the URL for."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with the song's YouTube ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SongUrl"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/artistsongs": {
+      "get": {
+        "summary": "Get an artist's top songs",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The name of the artist."
+          },
+          {
+            "name": "alredy_played_song",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "A song title to exclude from the results."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with the artist's top tracks.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtistTopTracks"
+                }
+              }
+            }
+          }
+        }
       }
     }
   }

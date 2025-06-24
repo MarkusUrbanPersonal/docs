@@ -103,7 +103,16 @@
               "api-reference/endpoint/rooms/room_heartbeat",
               "api-reference/endpoint/rooms/send-videocall-push"
             ]
-          }
+          },
+          {
+            "group": "Music",
+            "pages": [
+              "api-reference/endpoint/music/songsearch",
+              "api-reference/endpoint/music/songurl",
+              "api-reference/endpoint/music/artistsongs"
+              
+            ]
+          },
         ]
       }
     ],
