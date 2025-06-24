@@ -1,0 +1,64 @@
+---
+title: "Product roadmap"
+description: "Send and receive audio messages"
+icon: "map"
+---
+
+
+<Update label="2024-10-12" description="v0.1.1">
+  This is how you use a changelog with a label 
+  and a description.
+  <img
+  className="block"
+  src="/images/audiomessages.png"
+  alt="Audio messages preview"
+  title={true}
+/>
+</Update>
+<Update label="2024-10-11" description="v0.1.0">
+  This is how you use a changelog with a label 
+  and a description.
+</Update>
+
+## Audio messages
+
+### Record an audio message
+
+_Work in progress_
+
+### Listen to messages
+
+#### All messages
+
+The whole message list can be shown by calling the `activate_audio_messages` function
+
+```javascript audiomessages.js
+function activate_audio_messages() {
+
+    audio_messages_skeleton();
+
+    // Fetch latest audio messages
+    current_app_name = "audio_messages";
+    const from_timestamp = new Date(0).toISOString();
+    get_last_files("audio", from_timestamp);
+
+}
+```
+
+#### From a specific user
+
+It is also possible to fetch the messages that have been sent by a specific user, that is identified using the `user_id`. 
+
+```javascript audiomessages.js
+function get_audios_from_user(user_id) {
+
+    audio_messages_skeleton();
+
+    // Get audios from specific user_id from server
+    current_app_name = "audio_messages";
+    const from_timestamp = new Date(0).toISOString();
+    get_last_files("audio", from_timestamp, user_id);
+
+}
+```
+
