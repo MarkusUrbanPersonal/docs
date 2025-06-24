@@ -63,9 +63,9 @@
           {
             "group": "Connection",
             "pages": [
-              "api-reference/endpoint/connection/get-connected-users",
-              "api-reference/endpoint/connection/get-connected-assistants",
-              "api-reference/endpoint/connection/get-code"
+              "api-reference/endpoint/connections/get-connected-users",
+              "api-reference/endpoint/connections/get-connected-assistants",
+              "api-reference/endpoint/connections/get-code"
             ]
           },
           {
