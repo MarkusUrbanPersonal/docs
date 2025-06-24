@@ -92,14 +92,14 @@
           "icon": "book-open-cover"
         },
         {
-          "anchor": "Community",
+          "anchor": "Support",
           "href": "https://mintlify.com/community",
-          "icon": "slack"
+          "icon": "envelope"
         },
         {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "Status",
+          "href": "https://cati.statuspage.io",
+          "icon": "wave-pulse"
         }
       ]
     }
