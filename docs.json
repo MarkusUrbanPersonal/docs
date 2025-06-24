@@ -38,13 +38,6 @@
         "tab": "API Reference",
         "groups": [
           {
-            "group": "Core API",
-            "openapi": {
-              "source": "/openapi.json",
-              "directory": "api-reference/core"
-            }
-          },
-          {
             "group": "API Documentation",
             "pages": [
               "api-reference/introduction",
