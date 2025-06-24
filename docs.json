@@ -108,6 +108,18 @@
               "api-reference/endpoint/music/artistsongs"
               
             ]
+          },
+          {
+            "group": "Calendar",
+            "pages": [
+              "api-reference/endpoint/calendar/get-events",
+              "api-reference/endpoint/calendar/add-event",
+              "api-reference/endpoint/calendar/delete-event",
+              "api-reference/endpoint/calendar/get-events-mobile",
+              "api-reference/endpoint/calendar/add-event-mobile",
+              "api-reference/endpoint/calendar/delete-event-mobile"
+              
+            ]
           }
         ]
       }

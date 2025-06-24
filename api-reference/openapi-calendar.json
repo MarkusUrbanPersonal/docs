@@ -1,0 +1,425 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Calendar API",
+    "description": "API for managing calendar events for the Catalina Project. Includes examples for all endpoints.",
+    "version": "1.0.1",
+    "contact": {
+      "name": "Markus Urban"
+    }
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "paths": {
+    "/get-events": {
+      "post": {
+        "summary": "Fetch assistant's events",
+        "description": "Retrieves all calendar events for an assistant, identified by a JWT token.",
+        "tags": ["Assistant"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "JWT token of the assistant.",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhc3Npc3RhbnQtYWJjLTc4OSIsImlhdCI6MTcxOTI1ODMwMH0.fakeTokenString"
+                  }
+                },
+                "required": ["token"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A list of events.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Event"
+                  }
+                },
+                "example": [
+                  {
+                    "title": "Project Deadline",
+                    "start": "2025-08-01T17:00:00Z",
+                    "color": "#dc3545",
+                    "allDay": false,
+                    "alarm": true
+                  },
+                  {
+                    "title": "Catalina Project Sync",
+                    "start": "2025-08-05T10:00:00Z",
+                    "color": "#007bff",
+                    "allDay": false,
+                    "alarm": true
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or missing token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "status": "invalid",
+                  "message": "Token missing"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/get-events-mobile": {
+      "post": {
+        "summary": "Fetch assistant's events for a connected mobile user",
+        "description": "Retrieves all calendar events for a specific assistant, verifying that the mobile user (identified by token) is connected to that assistant.",
+        "tags": ["Mobile User"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "JWT token of the mobile user.",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtb2JpbGUtdXNlci14eXotMTIzIiwiaWF0IjoxNzE5MjU4NjAwfQ.anotherFakeToken"
+                  },
+                  "assistant_id": {
+                    "type": "string",
+                    "description": "The ID of the assistant whose events are being requested.",
+                    "example": "assistant-abc-789"
+                  }
+                },
+                "required": ["token", "assistant_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A list of events or an error if not connected.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    { "type": "array", "items": { "$ref": "#/components/schemas/Event" } },
+                    { "$ref": "#/components/schemas/NotConnectedError" }
+                  ]
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Successful retrieval of events",
+                    "value": [
+                      {
+                        "title": "Quarterly Review",
+                        "start": "2025-07-20T11:00:00Z",
+                        "color": "#ffc107",
+                        "allDay": false,
+                        "alarm": true
+                      }
+                    ]
+                  },
+                  "notConnected": {
+                    "summary": "User is not connected to the assistant",
+                    "value": {
+                      "status": "error",
+                      "type": "not_connected"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/add-event": {
+      "post": {
+        "summary": "Add a new event for an assistant",
+        "description": "Adds a single new event to the assistant's calendar. The assistant is identified by the provided JWT token.",
+        "tags": ["Assistant"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AddEventAssistantPayload" },
+              "example": {
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhc3Npc3RhbnQtYWJjLTc4OSIsImlhdCI6MTcxOTI1ODMwMH0.fakeTokenString",
+                "title": "New Client Onboarding",
+                "start": "2025-07-30T09:30:00Z",
+                "color": "#28a745",
+                "allDay": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status of the event addition.",
+            "content": {
+              "application/json": {
+                "schema": { "oneOf": [ { "$ref": "#/components/schemas/Success" }, { "$ref": "#/components/schemas/Error" } ] },
+                "examples": {
+                  "success": {
+                    "summary": "Event added",
+                    "value": { "status": "success", "message": "Event added successfully" }
+                  },
+                  "error": {
+                    "summary": "Failed to add event",
+                    "value": { "status": "error", "message": "Database connection failed" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/add-event-mobile": {
+      "post": {
+        "summary": "Add a new event via mobile app",
+        "description": "Adds a single new event to an assistant's calendar, initiated by a connected mobile user.",
+        "tags": ["Mobile User"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AddEventMobilePayload" },
+              "example": {
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtb2JpbGUtdXNlci14eXotMTIzIiwiaWF0IjoxNzE5MjU4NjAwfQ.anotherFakeToken",
+                "assistant_id": "assistant-abc-789",
+                "title": "Dentist Appointment",
+                "start": "2025-08-12T16:00:00Z",
+                "color": "#17a2b8",
+                "allDay": false,
+                "alarm": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status of the event addition or error if not connected.",
+            "content": {
+              "application/json": {
+                "schema": { "oneOf": [ { "$ref": "#/components/schemas/Success" }, { "$ref": "#/components/schemas/Error" }, { "$ref": "#/components/schemas/NotConnectedError" } ] },
+                 "examples": {
+                  "success": {
+                    "summary": "Event added by mobile user",
+                    "value": { "status": "success", "message": "Event added successfully" }
+                  },
+                  "notConnected": {
+                    "summary": "User is not connected to the assistant",
+                    "value": { "status": "error", "type": "not_connected" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/delete-event": {
+      "post": {
+        "summary": "Replace all events for an assistant",
+        "description": "Deletes all existing events for an assistant and replaces them with a new list of events. The assistant is identified by the provided JWT token.",
+        "tags": ["Assistant"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": { "type": "string" },
+                  "events": { "type": "array", "items": { "$ref": "#/components/schemas/Event" } }
+                },
+                "required": ["token", "events"]
+              },
+              "examples": {
+                "replaceWithOneEvent": {
+                  "summary": "Replace calendar with a single new event",
+                  "value": {
+                    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhc3Npc3RhbnQtYWJjLTc4OSIsImlhdCI6MTcxOTI1ODMwMH0.fakeTokenString",
+                    "events": [
+                      {
+                        "title": "All-Hands Meeting",
+                        "start": "2025-09-01T10:00:00Z",
+                        "color": "#6f42c1",
+                        "allDay": false,
+                        "alarm": true
+                      }
+                    ]
+                  }
+                },
+                 "clearAllEvents": {
+                  "summary": "Clear all events from the calendar",
+                  "value": {
+                    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhc3Npc3RhbnQtYWJjLTc4OSIsImlhdCI6MTcxOTI1ODMwMH0.fakeTokenString",
+                    "events": []
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status of the event update operation.",
+            "content": {
+              "application/json": {
+                "schema": { "oneOf": [ { "$ref": "#/components/schemas/SuccessUpdate" }, { "$ref": "#/components/schemas/Error" } ] },
+                "examples": {
+                  "success": {
+                    "summary": "Update successful",
+                    "value": { "status": "success", "message": "Events updated successfully" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/update-event-mobile": {
+      "post": {
+        "summary": "Replace all events for an assistant via mobile app",
+        "description": "Deletes all existing events for an assistant and replaces them with a new list, initiated by a connected mobile user.",
+        "tags": ["Mobile User"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": { "type": "string" },
+                  "assistant_id": { "type": "string" },
+                  "events": { "type": "array", "items": { "$ref": "#/components/schemas/Event" } }
+                },
+                "required": ["token", "assistant_id", "events"]
+              },
+              "example": {
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtb2JpbGUtdXNlci14eXotMTIzIiwiaWF0IjoxNzE5MjU4NjAwfQ.anotherFakeToken",
+                "assistant_id": "assistant-abc-789",
+                "events": [
+                  {
+                      "title": "Team Lunch",
+                      "start": "2025-08-22T12:30:00Z",
+                      "color": "#28a745",
+                      "allDay": false,
+                      "alarm": false
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status of the event update operation or error if not connected.",
+            "content": {
+              "application/json": {
+                "schema": { "oneOf": [ { "$ref": "#/components/schemas/SuccessUpdate" }, { "$ref": "#/components/schemas/Error" }, { "$ref": "#/components/schemas/NotConnectedError" } ] },
+                 "examples": {
+                  "success": {
+                    "summary": "Update successful",
+                    "value": { "status": "success", "message": "Events updated successfully" }
+                  },
+                   "notConnected": {
+                    "summary": "User is not connected to the assistant",
+                    "value": { "status": "error", "type": "not_connected" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Event": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string", "example": "Team Meeting" },
+          "start": { "type": "string", "format": "date-time", "example": "2025-07-25T14:00:00Z" },
+          "color": { "type": "string", "example": "#007bff" },
+          "allDay": { "type": "boolean", "example": false },
+          "alarm": { "type": "boolean", "example": true }
+        },
+        "required": ["title", "start", "color", "allDay", "alarm"]
+      },
+      "AddEventAssistantPayload": {
+        "type": "object",
+        "properties": {
+          "token": { "type": "string", "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhc3Npc3RhbnQtYWJjLTc4OSIsImlhdCI6MTcxOTI1ODMwMH0.fakeTokenString" },
+          "title": { "type": "string", "example": "Performance Review" },
+          "start": { "type": "string", "format": "date-time", "example": "2025-08-04T13:00:00Z" },
+          "color": { "type": "string", "example": "#ffc107" },
+          "allDay": { "type": "boolean", "example": false }
+        },
+        "required": ["token", "title", "start", "color", "allDay"]
+      },
+      "AddEventMobilePayload": {
+        "type": "object",
+        "properties": {
+          "token": { "type": "string", "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtb2JpbGUtdXNlci14eXotMTIzIiwiaWF0IjoxNzE5MjU4NjAwfQ.anotherFakeToken" },
+          "assistant_id": { "type": "string", "example": "assistant-abc-789" },
+          "title": { "type": "string", "example": "Doctor's Appointment" },
+          "start": { "type": "string", "format": "date-time", "example": "2025-08-20T09:00:00Z" },
+          "color": { "type": "string", "example": "#17a2b8" },
+          "allDay": { "type": "boolean", "example": false },
+          "alarm": { "type": "boolean", "example": true }
+        },
+        "required": ["token", "assistant_id", "title", "start", "color", "allDay", "alarm"]
+      },
+      "Success": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "message": { "type": "string", "example": "Event added successfully" }
+        }
+      },
+      "SuccessUpdate": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "message": { "type": "string", "example": "Events updated successfully" }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "invalid" },
+          "message": { "type": "string", "example": "Invalid or expired token" }
+        }
+      },
+      "NotConnectedError": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "error" },
+          "type": { "type": "string", "example": "not_connected" }
+        }
+      }
+    }
+  }
+}
