@@ -36,57 +36,59 @@
       },
       {
         "tab": "API Reference",
-        "groups": [{
-          "group": "Authentication & Users",
-          "dropdowns": [
-            {
-              "dropdown": "Auth",
-              "pages": [
-                "api-reference/endpoint/users/register-assistant",
-                "api-reference/endpoint/users/register-appuser",
-                "api-reference/endpoint/users/login-appuser",
-                "api-reference/endpoint/users/connect"
-              ]
-            },
-            {
-              "dropdown": "User Data",
-              "pages": [
-                "api-reference/endpoint/users/get-user-id",
-                "api-reference/endpoint/users/update-user-basic-data",
-                "api-reference/endpoint/users/update-user-phone-number"
-              ]
-            },
-            {
-              "dropdown": "SMS",
-              "pages": [
-                "api-reference/endpoint/users/send-sms",
-                "api-reference/endpoint/users/send-reset-sms",
-                "api-reference/endpoint/users/generate-password-reset-token",
-                "api-reference/endpoint/users/reset-password"
-              ]
-            }
-          ]
-        },
-        {
-          "group": "Media",
-          "pages": [
-            "api-reference/endpoint/media/send-image",
-            "api-reference/endpoint/media/send-audio",
-            "api-reference/endpoint/media/receive-image",
-            "api-reference/endpoint/media/receive-audio",
-            "api-reference/endpoint/media/receive-media-mobile"
-          ]
-        },
-        {
-          "group": "Contacts",
-          "pages": [
-            "api-reference/endpoint/contacts/get-contacts",
-            "api-reference/endpoint/contacts/get-contacts-mobile",
-            "api-reference/endpoint/contacts/create-contact",
-            "api-reference/endpoint/contacts/edit-contact",
-            "api-reference/endpoint/contacts/delete-contact"
-          ]
-        }
+        "groups": [
+          {
+            "group": "API Documentation",
+            "pages": [
+              "api-reference/introduction",
+              "api-reference/authentication"
+            ]
+          },
+          {
+            "group": "Authentication & Users",
+            "pages": [
+              "api-reference/endpoint/users/register-assistant",
+              "api-reference/endpoint/users/register-appuser",
+              "api-reference/endpoint/users/send-sms",
+              "api-reference/endpoint/users/login-appuser",
+              "api-reference/endpoint/users/connect",
+              "api-reference/endpoint/users/get-user-id",
+              "api-reference/endpoint/users/update-user-basic-data",
+              "api-reference/endpoint/users/update-user-phone-number",
+              "api-reference/endpoint/users/send-reset-sms",
+              "api-reference/endpoint/users/generate-password-reset-token",
+              "api-reference/endpoint/users/reset-password"
+            ]
+          },
+          {
+            "group": "Media",
+            "pages": [
+              "api-reference/endpoint/media/send-image",
+              "api-reference/endpoint/media/send-audio",
+              "api-reference/endpoint/media/receive-image",
+              "api-reference/endpoint/media/receive-audio",
+              "api-reference/endpoint/media/receive-media-mobile"
+              
+            ]
+          },
+          {
+            "group": "Contacts",
+            "pages": [
+              "api-reference/endpoint/contacts/get-contacts",
+              "api-reference/endpoint/contacts/get-contacts-mobile",
+              "api-reference/endpoint/contacts/create-contact",
+              "api-reference/endpoint/contacts/edit-contact",
+              "api-reference/endpoint/contacts/delete-contact"
+            ]
+          },
+          {
+            "group": "Videocalls",
+            "pages": [
+              "api-reference/endpoint/videocalls/room_join",
+              "api-reference/endpoint/videocalls/room_heartbeat",
+              "api-reference/endpoint/videocalls/send-videocall-push"
+            ]
+          }
         ]
       }
     ],
