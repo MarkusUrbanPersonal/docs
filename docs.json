@@ -17,19 +17,15 @@
             "group": "Get Started",
             "pages": [
               "index",
-              "quickstart",
-              "development"
+              "user-types",
+              "frontend"
             ]
           },
           {
             "group": "Features",
             "pages": [
               "essentials/audiomessages",
-              "essentials/imagesharing",
-              "essentials/images",
-              "essentials/settings",
-              "essentials/navigation",
-              "essentials/reusable-snippets"
+              "essentials/imagesharing"
             ]
           }
         ]
