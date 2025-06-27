@@ -17,8 +17,15 @@
             "group": "Get Started",
             "pages": [
               "index",
-              "user-types",
-              "frontend"
+              "brand",
+              "roadmap"
+            ]
+          },
+          {
+            "group": "Specifications",
+            "pages": [
+              "frontend",
+              "emotions"
             ]
           },
           {
